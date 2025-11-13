@@ -1,4 +1,5 @@
 import pygame
+from sudoku_generator import generate_sudoku
 
 class Board:
     def __init__(self, size, difficulty):
@@ -6,8 +7,9 @@ class Board:
         pygame.display.set_caption("Sudoku")
         self.size = size
         self.square_size = size / 9
-        self.difficulty = difficulty
         self.current_cell = None
+
+        self.nums = generate_sudoku(9, difficulty)
 
     def draw_grid(self):
         for x in range(2):
