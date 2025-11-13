@@ -1,5 +1,6 @@
 import pygame
 from sudoku_generator import generate_sudoku
+from button import Button
 
 class Board:
     def __init__(self, size, difficulty):
@@ -10,6 +11,10 @@ class Board:
         self.current_cell = None
 
         self.nums = generate_sudoku(9, difficulty)
+
+        self.buttons = [
+            Button(self.screen, 0, self.size, 50, 50)
+        ]
 
     def draw_grid(self):
         for x in range(2):
@@ -44,8 +49,11 @@ class Board:
         else:
             self.current_cell = cell
 
+    def draw_buttons(self):
+        for button in self.buttons:
+            button.draw()
 
-    def update(self):
+    def draw_board(self):
         self.screen.fill((255, 255, 255))
         self.highlight_affected()
         self.draw_grid()
