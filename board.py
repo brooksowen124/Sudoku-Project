@@ -15,11 +15,17 @@ class Board:
         self.nums, self.solved_board = generate_sudoku(9, difficulty)
         self.original = copy.deepcopy(self.nums)
 
+        self.running = True
+
         self.buttons = {
             "Reset": Button(self.screen, size / 4 * 1, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Reset", 20, lambda: print("Reset")),
             "Restart": Button(self.screen, size / 4 * 2, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Restart", 20, lambda: print("Restart")),
-            "Exit": Button(self.screen, size / 4 * 3, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Exit", 20, lambda: print("Exit"))
+            "Exit": Button(self.screen, size / 4 * 3, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Exit", 20, quit)
         }
+
+        pygame.font.init()
+        print(self.nums)
+
 
     def draw_grid(self):
         for x in range(2):
@@ -46,7 +52,7 @@ class Board:
             pygame.draw.rect(self.screen, (210, 210, 210), vert_rect)
 
 
-    def click(self):
+    def select(self):
         pos = pygame.mouse.get_pos()
         cell = (pos[0] // self.square_size, pos[1] // self.square_size)
         if cell[0] < 9 and cell[1] < 9:
@@ -70,12 +76,23 @@ class Board:
         for button in self.buttons:
             self.buttons[button].draw()
 
+    def draw_nums(self):
+        font = pygame.font.SysFont('Arial', int(self.square_size / 1.5))
+        for row in range(9):
+            for col in range(9):
+                if self.nums[row][col] != 0:
+                    text_surface = font.render(str(self.nums[row][col]), True, (0, 0, 0))
+                    text_dest = (self.square_size * col + (self.square_size - text_surface.get_rect().width) / 2, self.square_size * row + (self.square_size - text_surface.get_rect().height) / 2)
+                    self.screen.blit(text_surface, text_dest)
+
     def draw_board(self):
         self.screen.fill((255, 255, 255))
+
         self.highlight_affected()
         self.draw_grid()
         self.highlight_cell()
         self.draw_buttons()
+        self.draw_nums()
 
         pygame.display.flip()
 
@@ -106,6 +123,8 @@ class Board:
             return True
         return False
 
+    def quit(self):
+        self.running = False
 
 
 
