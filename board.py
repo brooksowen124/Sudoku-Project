@@ -1,11 +1,12 @@
 import pygame
 import copy
+
 from sudoku_generator import generate_sudoku
 from button import Button
 
 class Board:
     def __init__(self, size, difficulty):
-        self.screen = pygame.display.set_mode((size + 2, size + size / 9))
+        self.screen = pygame.display.set_mode((size + 2, size + size * 2 / 9))
         pygame.display.set_caption("Sudoku")
         self.size = size
         self.square_size = size / 9
@@ -14,9 +15,11 @@ class Board:
         self.nums, self.solved_board = generate_sudoku(9, difficulty)
         self.original = copy.deepcopy(self.nums)
 
-        self.buttons = [
-            Button(self.screen, 0, self.size, 50, 50)
-        ]
+        self.buttons = {
+            "Reset": Button(self.screen, size / 4 * 1, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Reset", 20, lambda: print("Reset")),
+            "Restart": Button(self.screen, size / 4 * 2, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Restart", 20, lambda: print("Restart")),
+            "Exit": Button(self.screen, size / 4 * 3, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Exit", 20, lambda: print("Exit"))
+        }
 
     def draw_grid(self):
         for x in range(2):
@@ -39,27 +42,40 @@ class Board:
         if self.current_cell is not None:
             hori_rect = pygame.Rect(0, self.current_cell[1] * self.square_size, self.size, self.square_size + 1)
             vert_rect = pygame.Rect(self.current_cell[0] * self.square_size + 1, 0, self.square_size, self.size)
-            pygame.draw.rect(self.screen, (180, 180, 180), hori_rect)
-            pygame.draw.rect(self.screen, (180, 180, 180), vert_rect)
+            pygame.draw.rect(self.screen, (210, 210, 210), hori_rect)
+            pygame.draw.rect(self.screen, (210, 210, 210), vert_rect)
 
 
     def click(self):
         pos = pygame.mouse.get_pos()
         cell = (pos[0] // self.square_size, pos[1] // self.square_size)
-        if cell == self.current_cell:
-            self.current_cell = None
-        else:
-            self.current_cell = cell
+        if cell[0] < 9 and cell[1] < 9:
+            if cell == self.current_cell:
+                self.current_cell = None
+            else:
+                self.current_cell = cell
+
+    def button_held(self):
+        pos = pygame.mouse.get_pos()
+        for i in self.buttons:
+            self.buttons[i].is_held(pos, pygame.mouse.get_pressed()[0])
+
+    def button_released(self):
+        pos = pygame.mouse.get_pos()
+        for i in self.buttons:
+            self.buttons[i].is_released(pos)
+
 
     def draw_buttons(self):
         for button in self.buttons:
-            button.draw()
+            self.buttons[button].draw()
 
     def draw_board(self):
         self.screen.fill((255, 255, 255))
         self.highlight_affected()
         self.draw_grid()
         self.highlight_cell()
+        self.draw_buttons()
 
         pygame.display.flip()
 
