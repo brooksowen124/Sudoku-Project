@@ -1,4 +1,5 @@
 import pygame
+import copy
 from sudoku_generator import generate_sudoku
 from button import Button
 
@@ -10,7 +11,8 @@ class Board:
         self.square_size = size / 9
         self.current_cell = None
 
-        self.nums = generate_sudoku(9, difficulty)
+        self.nums, self.solved_board = generate_sudoku(9, difficulty)
+        self.original = copy.deepcopy(self.nums)
 
         self.buttons = [
             Button(self.screen, 0, self.size, 50, 50)
@@ -60,6 +62,35 @@ class Board:
         self.highlight_cell()
 
         pygame.display.flip()
+
+    def is_full(self):
+        for i in range(9):
+            for j in range(9):
+                if self.nums[i][j] == 0:
+                    return False
+        return True
+
+    def update_board(self):
+        # this function should update self.nums with the values that are on the screen, alec pls help
+        pass
+
+    def find_empty(self):
+        for i in range(9):
+            for j in range(9):
+                if self.nums[i][j] == 0:
+                    return (i, j)
+        raise "Error: board is full"
+
+    def check_board(self):
+        if self.is_full():
+            for i in range(9):
+                for j in range(9):
+                    if self.solved_board[i][j] != self.nums[i][j]:
+                        return False
+            return True
+        return False
+
+
 
 
 

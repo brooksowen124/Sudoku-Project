@@ -250,7 +250,8 @@ def generate_sudoku(size, removed):
     sudoku = SudokuGenerator(size, removed)
     sudoku.fill_values()
     board = sudoku.get_board()
+    solved_board = board
     sudoku.remove_cells()
     board = sudoku.get_board()
-    return board
+    return board, solved_board
 
