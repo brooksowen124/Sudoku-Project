@@ -62,10 +62,10 @@ class Board:
                     return False
         return True
 
-    def update_board(self):
+    def update_board(self,):
         # this function should update self.nums with the values that are on the screen, alec pls help
-        pass
-    
+
+
     def find_empty(self):
         for i in range(9):
             for j in range(9):
