@@ -36,6 +36,11 @@ def main():
                     b.update_board(9)
                 elif key == pygame.K_DELETE or key == pygame.K_BACKSPACE:
                     b.update_board(0)
+                if b.is_full():
+                    if b.check_board():
+                        print("Board is solved")
+                    else:
+                        print("Board is not solved, lock in g")
 
 
 
