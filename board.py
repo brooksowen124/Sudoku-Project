@@ -1,6 +1,7 @@
 import pygame
 import copy
 
+
 from sudoku_generator import generate_sudoku
 from button import Button
 
@@ -15,6 +16,7 @@ class Board:
 
         self.nums, self.solved_board = generate_sudoku(9, difficulty)
         self.original = copy.deepcopy(self.nums)
+        self.sketch = [[0 for _ in range(9)] for _ in range(9)]
 
         self.running = True
 
@@ -25,6 +27,11 @@ class Board:
         }
 
         pygame.font.init()
+
+        self.num_font = pygame.font.SysFont('Arial', int(self.square_size / 1.5))
+        self.sketch_font = pygame.font.SysFont('Arial', int(self.square_size / 2.5))
+
+
 
 
     def draw_grid(self):
@@ -67,7 +74,13 @@ class Board:
                     pygame.draw.rect(self.screen, color, stay_rect)
 
 
+    def update_sketch(self, num):
+        if self.original[self.current_cell[1]][self.current_cell[0]] == 0:
+            self.sketch[self.current_cell[1]][self.current_cell[0]] = num
 
+    def set_sketch(self):
+        self.nums[self.current_cell[1]][self.current_cell[0]] = self.sketch[self.current_cell[1]][self.current_cell[0]]
+        self.sketch[self.current_cell[1]][self.current_cell[0]] = 0
 
 
     def select(self):
@@ -95,13 +108,17 @@ class Board:
             self.buttons[button].draw()
 
     def draw_nums(self):
-        font = pygame.font.SysFont('Arial', int(self.square_size / 1.5))
         for row in range(9):
             for col in range(9):
                 if self.nums[row][col] != 0:
-                    text_surface = font.render(str(self.nums[row][col]), True, (0, 0, 0))
+                    text_surface = self.num_font.render(str(self.nums[row][col]), True, (0, 0, 0))
                     text_dest = (self.square_size * col + (self.square_size - text_surface.get_rect().width) / 2, self.square_size * row + (self.square_size - text_surface.get_rect().height) / 2)
                     self.screen.blit(text_surface, text_dest)
+                elif self.sketch[row][col] != 0:
+                    text_surface = self.sketch_font.render(str(self.sketch[row][col]), True, (90, 90, 90))
+                    text_dest = (self.square_size * col + (self.square_size - text_surface.get_rect().width) / 4, self.square_size * row + (self.square_size - text_surface.get_rect().height) / 4)
+                    self.screen.blit(text_surface, text_dest)
+
 
 
 
@@ -124,9 +141,6 @@ class Board:
                     return False
         return True
 
-    def update_board(self, num):
-        if self.original[self.current_cell[1]][self.current_cell[0]] == 0:
-            self.nums[self.current_cell[1]][self.current_cell[0]] = num
 
     def find_empty(self):
         for i in range(9):
@@ -141,7 +155,6 @@ class Board:
                 if self.solved_board[i][j] == self.nums[i][j]:
                     return False
         return True
-
 
 
     def reset(self):

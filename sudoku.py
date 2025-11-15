@@ -2,7 +2,7 @@ import pygame
 from board import Board
 
 def main():
-    b = Board(700, 45)
+    b = Board(400, 45)
     clock = pygame.time.Clock()
     while b.running:
         b.draw_board()
@@ -16,6 +16,7 @@ def main():
 
             elif event.type == pygame.KEYDOWN:
                 key = event.key
+                print(b.current_cell)
 
                 if key == pygame.K_UP:
                     b.current_cell = (b.current_cell[0], max(b.current_cell[1] - 1, 0))
@@ -27,25 +28,29 @@ def main():
                     b.current_cell = (min(b.current_cell[0] + 1, 8), b.current_cell[1])
 
                 if key == pygame.K_1:
-                    b.update_board(1)
+                    b.update_sketch(1)
                 elif key == pygame.K_2:
-                    b.update_board(2)
+                    b.update_sketch(2)
                 elif key == pygame.K_3:
-                    b.update_board(3)
+                    b.update_sketch(3)
                 elif key == pygame.K_4:
-                    b.update_board(4)
+                    b.update_sketch(4)
                 elif key == pygame.K_5:
-                    b.update_board(5)
+                    b.update_sketch(5)
                 elif key == pygame.K_6:
-                    b.update_board(6)
+                    b.update_sketch(6)
                 elif key == pygame.K_7:
-                    b.update_board(7)
+                    b.update_sketch(7)
                 elif key == pygame.K_8:
-                    b.update_board(8)
+                    b.update_sketch(8)
                 elif key == pygame.K_9:
-                    b.update_board(9)
+                    b.update_sketch(9)
                 elif key == pygame.K_DELETE or key == pygame.K_BACKSPACE:
-                    b.update_board(0)
+                    b.update_sketch(0)
+
+                elif key == pygame.K_RETURN:
+                    b.set_sketch()
+
                 if b.is_full():
                     if b.check_board():
                         print("Board is solved")
