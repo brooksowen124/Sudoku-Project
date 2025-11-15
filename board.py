@@ -7,6 +7,7 @@ from button import Button
 
 class Board:
     def __init__(self, size, difficulty):
+        # constructor for a Board object, sets the screen, size of the screen, the difficulty (number of cells to be removed), and the current cell that is selected
         self.screen = pygame.display.set_mode((size + 2, size + size * 2 / 9))
         pygame.display.set_caption("Sudoku")
         self.size = size
@@ -14,12 +15,15 @@ class Board:
         self.difficulty = difficulty
         self.current_cell = None
 
-        self.nums, self.solved_board = generate_sudoku(9, difficulty)
+        # initializes the randomly generated board
+        self.nums = generate_sudoku(9, difficulty)
+        # stores the original board as a deep copy in case we reset the board
         self.original = copy.deepcopy(self.nums)
         self.sketch = [[0 for _ in range(9)] for _ in range(9)]
 
         self.running = True
 
+        # initializes the buttons on the board
         self.buttons = {
             "Reset": Button(self.screen, size / 4 * 1, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Reset", int(self.square_size / 2.7), self.reset),
             "Restart": Button(self.screen, size / 4 * 2, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Restart", int(self.square_size / 2.7), self.restart),
@@ -35,6 +39,7 @@ class Board:
 
 
     def draw_grid(self):
+        # draws the 9x9 grid on the screen
         for x in range(2):
             for num in range(10):
                 if num % 3 == 0:
@@ -47,11 +52,13 @@ class Board:
                     pygame.draw.line(self.screen, (0, 0, 0), (num * self.square_size, 0), (num * self.square_size, self.size), width)
 
     def highlight_cell(self):
+        # highlights the cell that is currently selected
         if self.current_cell is not None:
             rect = pygame.Rect(self.current_cell[0] * self.square_size, self.current_cell[1] * self.square_size, self.square_size + 2, self.square_size + 2)
             pygame.draw.rect(self.screen, (255, 0, 0), rect, 4)
 
     def highlight_affected(self):
+        # highlights the row and column and box of the cell that is currently selected
             for row in range(9):
                 for col in range(9):
                     if self.original[row][col] == 0:
@@ -75,19 +82,23 @@ class Board:
 
 
     def update_sketch(self, num):
+        # updates the 9x9 list of the sketches
         if self.original[self.current_cell[1]][self.current_cell[0]] == 0:
             self.sketch[self.current_cell[1]][self.current_cell[0]] = num
 
     def set_sketch(self):
+        # sets the 9x9 list of the sketches
         self.nums[self.current_cell[1]][self.current_cell[0]] = self.sketch[self.current_cell[1]][self.current_cell[0]]
         self.sketch[self.current_cell[1]][self.current_cell[0]] = 0
 
     def clear_cell(self):
+        # clears the current cell
         self.nums[self.current_cell[1]][self.current_cell[0]] = 0
         self.sketch[self.current_cell[1]][self.current_cell[0]] = 0
 
 
     def select(self):
+        # allows the user to select which cell to edit when they click on it
         pos = pygame.mouse.get_pos()
         cell = (int(pos[0] / self.square_size), int(pos[1] / self.square_size))
         if cell[0] < 9 and cell[1] < 9:
@@ -97,21 +108,25 @@ class Board:
                 self.current_cell = cell
 
     def button_held(self):
+        # detects if the user is holding their mouse button at a certain position
         pos = pygame.mouse.get_pos()
         for i in self.buttons:
             self.buttons[i].is_held(pos, pygame.mouse.get_pressed()[0])
 
     def button_released(self):
+        # detects when the user releases a button at a certain position
         pos = pygame.mouse.get_pos()
         for i in self.buttons:
             self.buttons[i].is_released(pos)
 
 
     def draw_buttons(self):
+        # draws the buttons on the screen
         for button in self.buttons:
             self.buttons[button].draw()
 
     def draw_nums(self):
+        # draws the numbers on the screen
         for row in range(9):
             for col in range(9):
                 if self.nums[row][col] != 0:
@@ -127,6 +142,7 @@ class Board:
 
 
     def draw_board(self):
+        # draws the board onto the screen
         self.screen.fill((255, 255, 255))
         self.highlight_affected()
 
@@ -139,6 +155,7 @@ class Board:
         pygame.display.flip()
 
     def is_full(self):
+        # detects if every element of the board contains a number
         for i in range(9):
             for j in range(9):
                 if self.nums[i][j] == 0:
@@ -147,6 +164,7 @@ class Board:
 
 
     def find_empty(self):
+        # finds any empty cells on the board
         for i in range(9):
             for j in range(9):
                 if self.nums[i][j] == 0:
@@ -154,6 +172,7 @@ class Board:
         raise "Error: board is full"
 
     def check_board(self):
+        # checks to ensure that every row, box, and column in the board is valid
         for row in self.nums:
             if sorted(row) != list(range(1, 10)):
                 return False
@@ -173,13 +192,16 @@ class Board:
 
 
     def reset(self):
+        # resets the board to the original position
         self.nums = copy.deepcopy(self.original)
 
     def restart(self):
-        self.nums, self.solved_board = generate_sudoku(9, self.difficulty)
+        # generates a new random sudoku board
+        self.nums = generate_sudoku(9, self.difficulty)
         self.original = copy.deepcopy(self.nums)
 
     def quit(self):
+        # quits the main board loop
         self.running = False
 
 

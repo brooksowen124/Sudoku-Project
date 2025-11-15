@@ -2,7 +2,7 @@ import pygame
 from board import Board
 
 def main():
-    b = Board(400, 45)
+    b = Board(400, 5    )
     clock = pygame.time.Clock()
     while b.running:
         b.draw_board()
