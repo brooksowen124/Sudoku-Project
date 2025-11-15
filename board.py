@@ -136,9 +136,20 @@ class Board:
         raise "Error: board is full"
 
     def check_board(self):
-        for i in range(9):
-            for j in range(9):
-                if self.solved_board[i][j] == self.nums[i][j]:
+        for row in self.nums:
+            if sorted(row) != list(range(1, 10)):
+                return False
+        for col in range(9):
+            column = [self.nums[row][col] for row in range(9)]
+            if sorted(column) != list(range(1, 10)):
+                return False
+        for box_row in range(0, 9, 3):
+            for box_col in range(0, 9, 3):
+                box = []
+                for r in range(box_row, box_row + 3):
+                    for c in range(box_col, box_col + 3):
+                        box.append(self.nums[r][c])
+                if sorted(box) != list(range(1, 10)):
                     return False
         return True
 
