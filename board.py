@@ -10,6 +10,7 @@ class Board:
         pygame.display.set_caption("Sudoku")
         self.size = size
         self.square_size = size / 9
+        self.difficulty = difficulty
         self.current_cell = None
 
         self.nums, self.solved_board = generate_sudoku(9, difficulty)
@@ -18,9 +19,9 @@ class Board:
         self.running = True
 
         self.buttons = {
-            "Reset": Button(self.screen, size / 4 * 1, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Reset", 20, self.reset),
-            "Restart": Button(self.screen, size / 4 * 2, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Restart", 20, lambda: self.restart(difficulty)),
-            "Exit": Button(self.screen, size / 4 * 3, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Exit", 20, self.quit)
+            "Reset": Button(self.screen, size / 4 * 1, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Reset", int(self.square_size / 2.7), self.reset),
+            "Restart": Button(self.screen, size / 4 * 2, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Restart", int(self.square_size / 2.7), self.restart),
+            "Exit": Button(self.screen, size / 4 * 3, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Exit", int(self.square_size / 2.7), self.quit)
         }
 
         pygame.font.init()
@@ -147,8 +148,8 @@ class Board:
     def reset(self):
         self.nums = copy.deepcopy(self.original)
 
-    def restart(self, difficulty):
-        self.nums, self.solved_board = generate_sudoku(9, difficulty)
+    def restart(self):
+        self.nums, self.solved_board = generate_sudoku(9, self.difficulty)
         self.original = copy.deepcopy(self.nums)
 
     def quit(self):
