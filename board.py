@@ -137,7 +137,7 @@ class Board:
     def check_board(self):
         for i in range(9):
             for j in range(9):
-                if self.solved_board[i][j] != self.nums[i][j]:
+                if self.solved_board[i][j] == self.nums[i][j]:
                     return False
         return True
 
