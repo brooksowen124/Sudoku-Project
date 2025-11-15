@@ -19,19 +19,21 @@ class Board:
 
         self.difficulty = 0
 
-        self.nums, self.solved_board = None, None
+        self.nums = None
 
         self.original = None
         self.sketch = None
 
+        self.win = False
+
         self.game_buttons = {
             "Reset": Button(self.screen, size / 4 * 1, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Reset", int(self.square_size / 2.7), self.reset),
             "Restart": Button(self.screen, size / 4 * 2, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Restart", int(self.square_size / 2.7), self.restart),
-            "Exit": Button(self.screen, size / 4 * 3, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Exit", int(self.square_size / 2.7), self.quit)
+            "Exit": Button(self.screen, size / 4 * 3, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Exit", int(self.square_size / 2.7), self.quit_game)
         }
 
         self.start_buttons = {
-            "Easy": Button(self.screen, size / 4 * 1, self.size / 2, self.square_size * 2, self.square_size * 0.8, "Easy", int(self.square_size / 2), lambda: self.set_difficulty(1)),
+            "Easy": Button(self.screen, size / 4 * 1, self.size / 2, self.square_size * 2, self.square_size * 0.8, "Easy", int(self.square_size / 2), lambda: self.set_difficulty(30)),
             "Medium": Button(self.screen, size / 4 * 2, self.size / 2, self.square_size * 2, self.square_size * 0.8, "Medium", int(self.square_size / 2), lambda: self.set_difficulty(40)),
             "Hard": Button(self.screen, size / 4 * 3, self.size / 2, self.square_size * 2,self.square_size * 0.8, "Hard", int(self.square_size / 2), lambda: self.set_difficulty(50)),
             "Exit": Button(self.screen, size / 4 * 3, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Exit", int(self.square_size / 2.7), self.quit_game)
@@ -49,18 +51,23 @@ class Board:
 
         self.num_font = pygame.font.SysFont('Arial', int(self.square_size / 1.5))
         self.sketch_font = pygame.font.SysFont('Arial', int(self.square_size / 2.5))
+        self.title_font = pygame.font.SysFont('Arial', int(self.square_size / 1))
+
 
     def start(self):
         self.start_screen = False
 
     def set_difficulty(self, difficulty):
         self.difficulty = difficulty
-
-        self.nums, self.solved_board = generate_sudoku(9, difficulty)
+        self.nums = generate_sudoku(9, difficulty)
 
         self.original = copy.deepcopy(self.nums)
         self.sketch = [[0 for _ in range(9)] for _ in range(9)]
         self.start()
+        self.running = True
+        self.current_cell = None
+
+        self.win = False
 
     def draw_grid(self):
         # draws the 9x9 grid on the screen
@@ -106,6 +113,8 @@ class Board:
         # updates the 9x9 list of the sketches
         if self.original[self.current_cell[1]][self.current_cell[0]] == 0:
             self.sketch[self.current_cell[1]][self.current_cell[0]] = num
+            self.nums[self.current_cell[1]][self.current_cell[0]] = 0
+
 
     def set_sketch(self):
         # sets the 9x9 list of the sketches
@@ -158,8 +167,9 @@ class Board:
                     text_dest = (self.square_size * col + (self.square_size - text_surface.get_rect().width) / 4, self.square_size * row + (self.square_size - text_surface.get_rect().height) / 4)
                     self.screen.blit(text_surface, text_dest)
 
-
-
+    def draw_title(self, text):
+        text_surface = self.title_font.render(text, True, (0, 0, 0))
+        self.screen.blit(text_surface, ((self.size - text_surface.get_rect().width) / 2, (self.size - text_surface.get_rect().height) / 4))
 
     def draw_board(self):
         # draws the board onto the screen
@@ -177,13 +187,22 @@ class Board:
     def draw_start(self):
         self.screen.fill((255, 255, 255))
 
+        self.draw_title("Sudoku")
+
         self.draw_buttons(self.start_buttons)
+
 
         pygame.display.flip()
 
 
     def draw_end(self):
         self.screen.fill((255, 255, 255))
+
+        if self.win:
+            self.draw_title("Game Won!")
+        else:
+            self.draw_title("Game Over :(")
+
 
         self.draw_buttons(self.end_buttons)
 
@@ -248,9 +267,19 @@ class Board:
         self.end_screen = False
         self.playing = False
 
-    def won(self):
+    def won(self, yes):
         self.quit()
         self.end_screen = True
+        if yes:
+            self.win = True
+        else:
+            self.win = False
+
+    def give_up(self):
+        self.quit()
+        self.end_screen = True
+        self.playing = False
+        self.win = False
 
 
 
