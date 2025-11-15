@@ -44,20 +44,23 @@ class Board:
             pygame.draw.rect(self.screen, (255, 0, 0), rect, 4)
 
     def highlight_affected(self):
-        if self.current_cell is not None:
-
             for row in range(9):
                 for col in range(9):
-                    if col == self.current_cell[0] or row == self.current_cell[1] or (col - col % 3 <= self.current_cell[0] <= col - col % 3 + 2) and (row - row % 3 <= self.current_cell[1] <= row - row % 3 + 2):
-                        if self.original[row][col] == 0:
-                            color = 240, 240, 150
-                        else:
-                            color = 180, 180, 140
+                    if self.original[row][col] == 0:
+                        color = 255, 255, 255
                     else:
-                        if self.original[row][col] == 0:
-                            color = 255, 255, 255
-                        else:
-                            color = 210, 210, 210
+                        color = 210, 210, 210
+
+                    if self.current_cell is not None:
+
+                        if col == self.current_cell[0] or row == self.current_cell[1] or (col - col % 3 <= self.current_cell[0] <= col - col % 3 + 2) and (row - row % 3 <= self.current_cell[1] <= row - row % 3 + 2):
+                            if self.original[row][col] == 0:
+                                color = 240, 240, 150
+                            else:
+                                color = 180, 180, 140
+
+
+
 
                     stay_rect = pygame.Rect(self.square_size * col, self.square_size * row, self.square_size + 1, self.square_size + 1)
                     pygame.draw.rect(self.screen, color, stay_rect)

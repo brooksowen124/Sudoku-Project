@@ -34,6 +34,9 @@ def main():
                     b.update_board(8)
                 elif key == pygame.K_9:
                     b.update_board(9)
+                elif key == pygame.K_DELETE or key == pygame.K_BACKSPACE:
+                    b.update_board(0)
+
 
 
                 elif event.key == pygame.K_ESCAPE:
