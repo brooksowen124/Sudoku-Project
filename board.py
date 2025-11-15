@@ -1,38 +1,68 @@
 import pygame
 import copy
 
+from pygame.examples.testsprite import Static
 
 from sudoku_generator import generate_sudoku
 from button import Button
 
 class Board:
-    def __init__(self, size, difficulty):
+    def __init__(self, size):
         self.screen = pygame.display.set_mode((size + 2, size + size * 2 / 9))
         pygame.display.set_caption("Sudoku")
         self.size = size
         self.square_size = size / 9
-        self.difficulty = difficulty
         self.current_cell = None
 
-        self.nums, self.solved_board = generate_sudoku(9, difficulty)
-        self.original = copy.deepcopy(self.nums)
-        self.sketch = [[0 for _ in range(9)] for _ in range(9)]
-
+        self.playing = True
         self.running = True
+        self.start_screen = True
+        self.end_screen = False
 
-        self.buttons = {
+        self.difficulty = 0
+
+        self.nums, self.solved_board = None, None
+
+        self.original = None
+        self.sketch = None
+
+        self.game_buttons = {
             "Reset": Button(self.screen, size / 4 * 1, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Reset", int(self.square_size / 2.7), self.reset),
             "Restart": Button(self.screen, size / 4 * 2, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Restart", int(self.square_size / 2.7), self.restart),
             "Exit": Button(self.screen, size / 4 * 3, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Exit", int(self.square_size / 2.7), self.quit)
         }
+
+        self.start_buttons = {
+            "Easy": Button(self.screen, size / 4 * 1, self.size / 2, self.square_size * 2, self.square_size * 0.8, "Easy", int(self.square_size / 2), lambda: self.set_difficulty(1)),
+            "Medium": Button(self.screen, size / 4 * 2, self.size / 2, self.square_size * 2, self.square_size * 0.8, "Medium", int(self.square_size / 2), lambda: self.set_difficulty(40)),
+            "Hard": Button(self.screen, size / 4 * 3, self.size / 2, self.square_size * 2,self.square_size * 0.8, "Hard", int(self.square_size / 2), lambda: self.set_difficulty(50)),
+            "Exit": Button(self.screen, size / 4 * 3, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Exit", int(self.square_size / 2.7), self.quit_game)
+
+        }
+
+        self.end_buttons = {
+            "Restart": Button(self.screen, size / 3 * 1, self.size / 3 * 2, self.square_size * 2, self.square_size * 0.8,"Restart", int(self.square_size / 2), self.quit),
+            "Exit": Button(self.screen, size / 3 * 2, self.size / 3 * 2, self.square_size * 2, self.square_size * 0.8,"Exit", int(self.square_size / 2), self.quit_game),
+
+        }
+
 
         pygame.font.init()
 
         self.num_font = pygame.font.SysFont('Arial', int(self.square_size / 1.5))
         self.sketch_font = pygame.font.SysFont('Arial', int(self.square_size / 2.5))
 
+    def start(self):
+        self.start_screen = False
 
+    def set_difficulty(self, difficulty):
+        self.difficulty = difficulty
 
+        self.nums, self.solved_board = generate_sudoku(9, difficulty)
+
+        self.original = copy.deepcopy(self.nums)
+        self.sketch = [[0 for _ in range(9)] for _ in range(9)]
+        self.start()
 
     def draw_grid(self):
         for x in range(2):
@@ -67,9 +97,6 @@ class Board:
                             else:
                                 color = 180, 180, 140
 
-
-
-
                     stay_rect = pygame.Rect(self.square_size * col, self.square_size * row, self.square_size + 1, self.square_size + 1)
                     pygame.draw.rect(self.screen, color, stay_rect)
 
@@ -96,20 +123,22 @@ class Board:
             else:
                 self.current_cell = cell
 
-    def button_held(self):
+    @staticmethod
+    def button_held(buttons):
         pos = pygame.mouse.get_pos()
-        for i in self.buttons:
-            self.buttons[i].is_held(pos, pygame.mouse.get_pressed()[0])
+        for i in buttons:
+            buttons[i].is_held(pos, pygame.mouse.get_pressed()[0])
 
-    def button_released(self):
+    @staticmethod
+    def button_released(buttons):
         pos = pygame.mouse.get_pos()
-        for i in self.buttons:
-            self.buttons[i].is_released(pos)
+        for i in buttons:
+            buttons[i].is_released(pos)
 
-
-    def draw_buttons(self):
-        for button in self.buttons:
-            self.buttons[button].draw()
+    @staticmethod
+    def draw_buttons(buttons):
+        for button in buttons:
+            buttons[button].draw()
 
     def draw_nums(self):
         for row in range(9):
@@ -134,9 +163,25 @@ class Board:
 
         self.draw_grid()
         self.highlight_cell()
-        self.draw_buttons()
+        self.draw_buttons(self.game_buttons)
 
         pygame.display.flip()
+
+    def draw_start(self):
+        self.screen.fill((255, 255, 255))
+
+        self.draw_buttons(self.start_buttons)
+
+        pygame.display.flip()
+
+
+    def draw_end(self):
+        self.screen.fill((255, 255, 255))
+
+        self.draw_buttons(self.end_buttons)
+
+        pygame.display.flip()
+
 
     def is_full(self):
         for i in range(9):
@@ -181,7 +226,18 @@ class Board:
 
     def quit(self):
         self.running = False
+        self.end_screen = False
+        self.start_screen = True
 
+    def quit_game(self):
+        self.quit()
+        self.start_screen = False
+        self.end_screen = False
+        self.playing = False
+
+    def won(self):
+        self.quit()
+        self.end_screen = True
 
 
 
