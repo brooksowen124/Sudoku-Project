@@ -2,7 +2,7 @@ import pygame
 from board import Board
 
 def main():
-    b = Board(400, 45)
+    b = Board(500, 45)
     clock = pygame.time.Clock()
     while b.running:
         b.draw_board()
@@ -15,7 +15,28 @@ def main():
                 b.button_released()
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+                key = event.key
+                if key == pygame.K_1:
+                    b.update_board(1)
+                elif key == pygame.K_2:
+                    b.update_board(2)
+                elif key == pygame.K_3:
+                    b.update_board(3)
+                elif key == pygame.K_4:
+                    b.update_board(4)
+                elif key == pygame.K_5:
+                    b.update_board(5)
+                elif key == pygame.K_6:
+                    b.update_board(6)
+                elif key == pygame.K_7:
+                    b.update_board(7)
+                elif key == pygame.K_8:
+                    b.update_board(8)
+                elif key == pygame.K_9:
+                    b.update_board(9)
+
+
+                elif event.key == pygame.K_ESCAPE:
                     b.quit()
             if event.type == pygame.QUIT:
                 b.quit()

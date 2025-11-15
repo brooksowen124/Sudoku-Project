@@ -18,13 +18,12 @@ class Board:
         self.running = True
 
         self.buttons = {
-            "Reset": Button(self.screen, size / 4 * 1, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Reset", 20, lambda: print("Reset")),
-            "Restart": Button(self.screen, size / 4 * 2, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Restart", 20, lambda: print("Restart")),
-            "Exit": Button(self.screen, size / 4 * 3, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Exit", 20, quit)
+            "Reset": Button(self.screen, size / 4 * 1, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Reset", 20, self.reset),
+            "Restart": Button(self.screen, size / 4 * 2, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Restart", 20, lambda: self.restart(difficulty)),
+            "Exit": Button(self.screen, size / 4 * 3, self.size * 10 / 9, self.square_size * 1.6, self.square_size * 0.8, "Exit", 20, self.quit)
         }
 
         pygame.font.init()
-        print(self.nums)
 
 
     def draw_grid(self):
@@ -46,15 +45,30 @@ class Board:
 
     def highlight_affected(self):
         if self.current_cell is not None:
-            hori_rect = pygame.Rect(0, self.current_cell[1] * self.square_size, self.size, self.square_size + 1)
-            vert_rect = pygame.Rect(self.current_cell[0] * self.square_size + 1, 0, self.square_size, self.size)
-            pygame.draw.rect(self.screen, (210, 210, 210), hori_rect)
-            pygame.draw.rect(self.screen, (210, 210, 210), vert_rect)
+
+            for row in range(9):
+                for col in range(9):
+                    if col == self.current_cell[0] or row == self.current_cell[1] or (col - col % 3 <= self.current_cell[0] <= col - col % 3 + 2) and (row - row % 3 <= self.current_cell[1] <= row - row % 3 + 2):
+                        if self.original[row][col] == 0:
+                            color = 240, 240, 150
+                        else:
+                            color = 180, 180, 140
+                    else:
+                        if self.original[row][col] == 0:
+                            color = 255, 255, 255
+                        else:
+                            color = 210, 210, 210
+
+                    stay_rect = pygame.Rect(self.square_size * col, self.square_size * row, self.square_size + 1, self.square_size + 1)
+                    pygame.draw.rect(self.screen, color, stay_rect)
+
+
+
 
 
     def select(self):
         pos = pygame.mouse.get_pos()
-        cell = (pos[0] // self.square_size, pos[1] // self.square_size)
+        cell = (int(pos[0] / self.square_size), int(pos[1] / self.square_size))
         if cell[0] < 9 and cell[1] < 9:
             if cell == self.current_cell:
                 self.current_cell = None
@@ -85,14 +99,17 @@ class Board:
                     text_dest = (self.square_size * col + (self.square_size - text_surface.get_rect().width) / 2, self.square_size * row + (self.square_size - text_surface.get_rect().height) / 2)
                     self.screen.blit(text_surface, text_dest)
 
+
+
     def draw_board(self):
         self.screen.fill((255, 255, 255))
-
         self.highlight_affected()
+
+        self.draw_nums()
+
         self.draw_grid()
         self.highlight_cell()
         self.draw_buttons()
-        self.draw_nums()
 
         pygame.display.flip()
 
@@ -103,15 +120,15 @@ class Board:
                     return False
         return True
 
-    def update_board(self):
-        # this function should update self.nums with the values that are on the screen, alec pls help
-        pass
+    def update_board(self, num):
+        if self.original[self.current_cell[1]][self.current_cell[0]] == 0:
+            self.nums[self.current_cell[1]][self.current_cell[0]] = num
 
     def find_empty(self):
         for i in range(9):
             for j in range(9):
                 if self.nums[i][j] == 0:
-                    return (i, j)
+                    return i, j
         raise "Error: board is full"
 
     def check_board(self):
@@ -123,8 +140,17 @@ class Board:
             return True
         return False
 
+
+    def reset(self):
+        self.nums = copy.deepcopy(self.original)
+
+    def restart(self, difficulty):
+        self.nums, self.solved_board = generate_sudoku(9, difficulty)
+        self.original = copy.deepcopy(self.nums)
+
     def quit(self):
         self.running = False
+
 
 
 
