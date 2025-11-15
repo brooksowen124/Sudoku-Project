@@ -136,13 +136,12 @@ class Board:
         raise "Error: board is full"
 
     def check_board(self):
-        if self.is_full():
-            for i in range(9):
-                for j in range(9):
-                    if self.solved_board[i][j] != self.nums[i][j]:
-                        return False
-            return True
-        return False
+        for i in range(9):
+            for j in range(9):
+                if self.solved_board[i][j] == self.nums[i][j]:
+                    return False
+        return True
+
 
 
     def reset(self):
