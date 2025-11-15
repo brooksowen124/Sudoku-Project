@@ -1,8 +1,6 @@
 import pygame
 import copy
 
-from pygame.examples.testsprite import Static
-
 from sudoku_generator import generate_sudoku
 from button import Button
 
