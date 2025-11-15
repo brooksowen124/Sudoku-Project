@@ -82,6 +82,10 @@ class Board:
         self.nums[self.current_cell[1]][self.current_cell[0]] = self.sketch[self.current_cell[1]][self.current_cell[0]]
         self.sketch[self.current_cell[1]][self.current_cell[0]] = 0
 
+    def clear_cell(self):
+        self.nums[self.current_cell[1]][self.current_cell[0]] = 0
+        self.sketch[self.current_cell[1]][self.current_cell[0]] = 0
+
 
     def select(self):
         pos = pygame.mouse.get_pos()

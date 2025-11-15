@@ -45,7 +45,7 @@ def main():
                 elif key == pygame.K_9:
                     b.update_sketch(9)
                 elif key == pygame.K_DELETE or key == pygame.K_BACKSPACE:
-                    b.update_sketch(0)
+                    b.clear_cell()
 
                 elif key == pygame.K_RETURN:
                     b.set_sketch()
