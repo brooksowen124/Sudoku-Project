@@ -16,7 +16,6 @@ def main():
 
             elif event.type == pygame.KEYDOWN:
                 key = event.key
-                print(b.current_cell)
 
                 if key == pygame.K_UP:
                     b.current_cell = (b.current_cell[0], max(b.current_cell[1] - 1, 0))
