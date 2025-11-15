@@ -1,6 +1,7 @@
 import pygame
-from sudoku_generator import generate_sudoku, SudokuGenerator
 import copy
+from sudoku_generator import generate_sudoku
+from button import Button
 
 class Board:
     def __init__(self, size, difficulty):
@@ -12,6 +13,10 @@ class Board:
 
         self.nums, self.solved_board = generate_sudoku(9, difficulty)
         self.original = copy.deepcopy(self.nums)
+
+        self.buttons = [
+            Button(self.screen, 0, self.size, 50, 50)
+        ]
 
     def draw_grid(self):
         for x in range(2):
@@ -46,8 +51,11 @@ class Board:
         else:
             self.current_cell = cell
 
+    def draw_buttons(self):
+        for button in self.buttons:
+            button.draw()
 
-    def update(self):
+    def draw_board(self):
         self.screen.fill((255, 255, 255))
         self.highlight_affected()
         self.draw_grid()
@@ -62,9 +70,9 @@ class Board:
                     return False
         return True
 
-    def update_board(self,):
+    def update_board(self):
         # this function should update self.nums with the values that are on the screen, alec pls help
-
+        pass
 
     def find_empty(self):
         for i in range(9):
